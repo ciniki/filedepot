@@ -1,0 +1,53 @@
+#
+# Description
+# -----------
+# The filedepot table stores the information about uploaded files.
+#
+# Fields
+# ------
+# id:				The file ID.
+# uuid:				The universion unique ID for the file.
+# parent_id:		The ID of the more recent file.  When listing on the website, only 
+#					files with no parent id (parent_id=0) will be shown, as they will be
+#					the lastest version.  When a new version is uploaded, all old versions
+#					should have their parent_id changed to the new uploaded file id.
+#
+# business_id:		The business the file is for.
+# type:				*future*
+#
+# name:				The name of the file, given by the user.
+#
+# version:			The version of the file, flexible so user can enter anything, will sort as alphanumeric.
+#
+# category:			The category for the file.
+#
+# description:		The file description.
+# org_filename:		The filename as specified on the remote system uploading the file.
+#
+# sharing_flags:	0x01 - public, display for anybody on the website
+# 					0x02 - customers, display for logged in customers
+#					0x04 - specific customers *future*
+#
+# user_id:			The user who uploaded the file.
+#
+# date_added:		The UTC date and time the file was added.
+# last_updated:		The UTC date and time the file was last updated.
+#
+create table ciniki_filedepot_files (
+	id int not null auto_increment,
+	uuid char(36) not null,
+	parent_id int not null,
+	business_id int not null,
+	type tinyint unsigned not null,
+	name varchar(250) not null,
+	version varchar(50) not null,
+	category varchar(150) not null,
+	description varchar(6000) not null,
+	org_filename varchar(250) not null,
+	sharing_flags tinyint unsigned not null,
+	user_id int not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	index (business_id, name)
+) ENGINE='InnoDB', COMMENT='v1.01';
