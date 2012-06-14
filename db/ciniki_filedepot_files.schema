@@ -15,11 +15,18 @@
 # business_id:		The business the file is for.
 # type:				*future*
 #
+# status:			The current status of the file.
+#					0 - unknown
+#					1 - Active
+#					60 - Deleted
+#
 # name:				The name of the file, given by the user.
 #
 # version:			The version of the file, flexible so user can enter anything, will sort as alphanumeric.
 #
 # category:			The category for the file.
+#
+# parent_category:	*future* The parent category for nested files. This form a file folder like system.
 #
 # description:		The file description.
 # org_filename:		The filename as specified on the remote system uploading the file.
@@ -39,9 +46,13 @@ create table ciniki_filedepot_files (
 	parent_id int not null,
 	business_id int not null,
 	type tinyint unsigned not null,
-	name varchar(250) not null,
+	extension varchar(10) not null,
+	status tinyint unsigned not null,
+	name varchar(200) not null,
 	version varchar(50) not null,
+	permalink varchar(250) not null,
 	category varchar(150) not null,
+	parent_category varchar(150) not null,
 	description varchar(6000) not null,
 	org_filename varchar(250) not null,
 	sharing_flags tinyint unsigned not null,
@@ -49,5 +60,6 @@ create table ciniki_filedepot_files (
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),
+	unique index (business_id, permalink), 
 	index (business_id, name)
 ) ENGINE='InnoDB', COMMENT='v1.01';

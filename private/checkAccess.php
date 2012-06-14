@@ -21,6 +21,11 @@ function ciniki_filedepot_checkAccess($ciniki, $business_id, $method) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+	if( isset($rc['modules']) ) {
+		$modules = $rc['modules'];
+	} else {
+		$modules = array();
+	}
 
 	if( !isset($rc['ruleset']) ) {
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'699', 'msg'=>'No permissions granted'));
@@ -31,7 +36,7 @@ function ciniki_filedepot_checkAccess($ciniki, $business_id, $method) {
 	//
 	if( $method != 'ciniki.filedepot.delete' ) {
 		if( ($ciniki['session']['user']['perms'] & 0x01) == 0x01 ) {
-			return array('stat'=>'ok');
+			return array('stat'=>'ok', 'modules'=>$modules);
 		}
 	}
 
@@ -54,7 +59,7 @@ function ciniki_filedepot_checkAccess($ciniki, $business_id, $method) {
 	//
 	if( isset($rc['rows']) && isset($rc['rows'][0]) 
 		&& $rc['rows'][0]['user_id'] > 0 && $rc['rows'][0]['user_id'] == $ciniki['session']['user']['id'] ) {
-		return array('stat'=>'ok');
+		return array('stat'=>'ok', 'modules'=>$modules);
 	}
 
 	//
