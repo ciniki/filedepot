@@ -17,6 +17,14 @@ function ciniki_filedepot_web_download($ciniki, $business_id, $file_uuid) {
 		. "WHERE ciniki_filedepot_files.permalink = '" . ciniki_core_dbQuote($ciniki, $file_uuid) . "' "
 		. "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
+		. "AND ciniki_filedepot_files.status = 1 "
+		// Verify requesting user has permission
+		. "AND ("
+			. "((ciniki_filedepot_files.sharing_flags&0x01) = 0x01) ";
+	if( isset($ciniki['session']['customer']['id']) && $ciniki['session']['customer']['id'] > 0 ) {
+		$strsql .= "OR ((ciniki_filedepot_files.sharing_flags&0x02) = 0x02) ";
+	}
+	$strsql .= ") "
 		. "";
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'filedepot', 'file');
 	if( $rc['stat'] != 'ok' ) {
