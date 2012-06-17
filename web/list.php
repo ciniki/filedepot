@@ -12,7 +12,7 @@
 //
 function ciniki_filedepot_web_list($ciniki, $business_id) {
 
-	$strsql = "SELECT ciniki_filedepot_files.id, category AS cname, name, version, description, permalink "
+	$strsql = "SELECT ciniki_filedepot_files.id, category AS cname, name, extension, version, description, permalink "
 		. "FROM ciniki_filedepot_files "
 		. "WHERE ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' " 
 		. "AND status = 1 "
@@ -25,13 +25,12 @@ function ciniki_filedepot_web_list($ciniki, $business_id) {
 		. "ORDER BY category, name ASC "
 		. "";
 
-	error_log($strsql);
     require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQueryTree.php');
 	return ciniki_core_dbHashQueryTree($ciniki, $strsql, 'links', array(
 		array('container'=>'categories', 'fname'=>'cname', 'name'=>'category',
 			'fields'=>array('name'=>'cname')),
 		array('container'=>'files', 'fname'=>'name', 'name'=>'file',
-			'fields'=>array('id', 'name', 'permalink', 'description')),
+			'fields'=>array('id', 'name', 'extension', 'permalink', 'description')),
 		));
 }
 ?>

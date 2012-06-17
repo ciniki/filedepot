@@ -14,7 +14,7 @@ function ciniki_filedepot_web_download($ciniki, $business_id, $file_uuid) {
 	$strsql = "SELECT ciniki_businesses.uuid AS business_uuid, ciniki_filedepot_files.uuid AS file_uuid, "
 		. "ciniki_filedepot_files.name, ciniki_filedepot_files.extension "
 		. "FROM ciniki_filedepot_files, ciniki_businesses "
-		. "WHERE ciniki_filedepot_files.permalink = '" . ciniki_core_dbQuote($ciniki, $file_uuid) . "' "
+		. "WHERE CONCAT_WS('.', ciniki_filedepot_files.permalink, ciniki_filedepot_files.extension) = '" . ciniki_core_dbQuote($ciniki, $file_uuid) . "' "
 		. "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
 		. "AND ciniki_filedepot_files.status = 1 "
