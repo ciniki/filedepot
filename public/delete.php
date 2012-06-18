@@ -54,7 +54,7 @@ function ciniki_filedepot_delete($ciniki) {
 	//
 	// Get the uuid for the file
 	//
-	$strsql = "SELECT ciniki_businesses.uuid AS business_uuid, ciniki_filedepot_files.uuid AS file_uuid "
+	$strsql = "SELECT ciniki_businesses.uuid AS business_uuid, ciniki_filedepot_files.uuid AS file_uuid, parent_id "
 		. "FROM ciniki_filedepot_files, ciniki_businesses "
 		. "WHERE ciniki_filedepot_files.id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
 		. "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
@@ -65,13 +65,58 @@ function ciniki_filedepot_delete($ciniki) {
 		ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
 		return $rc;
 	}
-	error_log($strsql);
 	if( !isset($rc['file']) ) {
 		ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'710', 'msg'=>'Unable to delete file'));
 	}
 	$file_uuid = $rc['file']['file_uuid'];
 	$business_uuid = $rc['file']['business_uuid'];
+	$old_parent_id = $rc['file']['parent_id'];
+
+	//
+	// Check if there were childing for this file,
+	// and reset parent to the most recent file.
+	//
+	$parent_id = 0;
+	if( $old_parent_id == 0 ) {
+		$strsql = "SELECT id, parent_id, version "
+			. "FROM ciniki_filedepot_files "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
+			. "ORDER BY id DESC "
+			. "";
+		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'filedepot', 'file');
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+			return $rc;
+		}
+		if( $rc['num_rows'] > 0 && isset($rc['rows'][0]['id']) ) {
+			// Update the most recent child to parent
+			$parent_id = $rc['rows'][0]['id'];
+			$strsql = "UPDATE ciniki_filedepot_files "
+				. "SET parent_id = 0, last_updated = UTC_TIMESTAMP() "
+				. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "' "
+				. "";
+			require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
+			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'filedepot');
+			if( $rc['stat'] != 'ok' ) {
+				ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+				return $rc;
+			}
+			$strsql = "UPDATE ciniki_filedepot_files "
+				. "SET parent_id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "', "
+				. "last_updated = UTC_TIMESTAMP() "
+				. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
+				. "";
+			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'filedepot');
+			if( $rc['stat'] != 'ok' ) {
+				ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+				return $rc;
+			}
+		}
+	}
 
 	//
 	// Move the file into storage
@@ -128,6 +173,6 @@ function ciniki_filedepot_delete($ciniki) {
 		}
 	}
 
-	return array('stat'=>'ok');
+	return array('stat'=>'ok', 'parent_id'=>$parent_id);
 }
 ?>

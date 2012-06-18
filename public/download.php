@@ -75,7 +75,10 @@ function ciniki_filedepot_download($ciniki) {
 	header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT"); 
 	header('Cache-Control: no-cache, must-revalidate');
 	header('Pragma: no-cache');
-//	header('Content-Type: application/vnd.ms-excel');
+	// Set mime header
+	$finfo = finfo_open(FILEINFO_MIME);
+	if( $finfo ) { header('Content-Type: ' . finfo_file($finfo, $storage_filename)); }
+	// Specify Filename
 	header('Content-Disposition: attachment;filename="' . $filename . '"');
 	header('Content-Length: ' . filesize($storage_filename));
 	header('Cache-Control: max-age=0');

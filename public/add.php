@@ -19,6 +19,7 @@ function ciniki_filedepot_add($ciniki) {
     require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
+		'child_id'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No file specified'),
 		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No type specified'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No name specified'), 
         'version'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'errmsg'=>'No version specified'), 
@@ -145,6 +146,28 @@ function ciniki_filedepot_add($ciniki) {
 		if( isset($ciniki['request']['args'][$field]) && $ciniki['request']['args'][$field] != '' ) {
 			$rc = ciniki_core_dbAddChangeLog($ciniki, 'filedepot', $args['business_id'], 
 				'ciniki_filedepot_files', $file_id, $insert_name, $ciniki['request']['args'][$field]);
+		}
+	}
+
+	//
+	// If a child_id was specified, then update all children
+	//
+	if( $args['child_id'] > 0 ) {
+		$strsql = "UPDATE ciniki_filedepot_files "
+			. "SET parent_id = '" . ciniki_core_dbQuote($ciniki, $file_id) . "' "
+			. ", last_updated = UTC_TIMESTAMP() "
+			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			// Move all children of the old parent
+			. "AND (parent_id = '" . ciniki_core_dbQuote($ciniki, $args['child_id']) . "' "
+				// and the original parent should now become a child
+				. "OR id = '" . ciniki_core_dbQuote($ciniki, $args['child_id']) . "' "
+				. ") "
+			. "";
+		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
+		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'filedepot');
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+			return $rc;
 		}
 	}
 

@@ -16,6 +16,7 @@ function ciniki_filedepot_web_list($ciniki, $business_id) {
 		. "FROM ciniki_filedepot_files "
 		. "WHERE ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' " 
 		. "AND status = 1 "
+		. "AND parent_id = 0 "
 		. "AND ("
 			. "((ciniki_filedepot_files.sharing_flags&0x01) = 0x01) ";
 	if( isset($ciniki['session']['customer']['id']) && $ciniki['session']['customer']['id'] > 0 ) {
