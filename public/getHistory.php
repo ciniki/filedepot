@@ -41,6 +41,6 @@ function ciniki_filedepot_getHistory($ciniki) {
 	}
 
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
-	return ciniki_core_dbGetModuleHistory($ciniki, 'filedepot', 'ciniki_filedepot_history', $args['business_id'], 'ciniki_filedepot_files', $args['file_id'], $args['field'], 'filedepot');
+	return ciniki_core_dbGetModuleHistory($ciniki, 'filedepot', 'ciniki_filedepot_history', $args['business_id'], 'ciniki_filedepot_files', $args['file_id'], $args['field']);
 }
 ?>
