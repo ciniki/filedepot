@@ -58,7 +58,7 @@ function ciniki_filedepot_add($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddChangeLog.php');
+	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'filedepot');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
@@ -144,8 +144,8 @@ function ciniki_filedepot_add($ciniki) {
 	foreach($changelog_fields as $field) {
 		$insert_name = $field;
 		if( isset($ciniki['request']['args'][$field]) && $ciniki['request']['args'][$field] != '' ) {
-			$rc = ciniki_core_dbAddChangeLog($ciniki, 'filedepot', $args['business_id'], 
-				'ciniki_filedepot_files', $file_id, $insert_name, $ciniki['request']['args'][$field]);
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'filedepot', 'ciniki_filedepot_history', $args['business_id'], 
+				1, 'ciniki_filedepot_files', $file_id, $insert_name, $ciniki['request']['args'][$field]);
 		}
 	}
 

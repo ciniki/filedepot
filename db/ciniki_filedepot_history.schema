@@ -1,0 +1,58 @@
+#
+# Description
+# -----------
+# This table stores all changes to the filedepot module.  
+#
+# Fields
+# ------
+# id: 				The id of the log entry.
+#
+# uuid:				The uuid of the log entry.  This is used for replication purposes.
+#
+# business_id:		The ID of the business the change happened on.  Every change
+#					must be tied to a business for security reasons.
+#
+# user_id:			The user who made the change.
+#
+# session:			The id of the current session for the user.  A login starts a 
+#					session, a logout or timeout ends a session.
+#					 
+#					The session and transaction fields are also a system 
+#					that group changes together.
+#
+# action:			The action performed.  This is used for rollback purposes.
+#	
+#					0 - unknown
+#					1 - add
+#					2 - update
+#					3 - delete
+#					4 - merge
+#					5 - automerge
+#
+# table_name:		The table where the change was made.
+#
+# table_key:		This should always be the primary key for the table changed.
+#
+# table_field:		The changed field.
+#
+# new_value:		The new value of the field.
+#
+# log_date: 		The UTC date and time the change happened.
+#
+create table ciniki_filedepot_history (
+	id bigint not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
+	user_id	int not null,
+	session varchar(50) not null,
+	action tinyint unsigned not null,
+	table_name varchar(50) not null,
+	table_key varchar(50) not null,
+	table_field varchar(50) not null,
+	new_value varchar(65000) not null,
+	log_date datetime not null,
+	primary key (id),
+	index (user_id), 
+	index (business_id, table_name, table_key, table_field),
+	index (log_date)
+) ENGINE=InnoDB, COMMENT='v1.01';
