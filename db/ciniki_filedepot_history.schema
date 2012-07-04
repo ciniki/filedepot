@@ -27,7 +27,9 @@
 #					2 - update
 #					3 - delete
 #					4 - merge
-#					5 - automerge
+#					5 - merge delete
+#					6 - automerge
+#					7 - automerge delete
 #
 # table_name:		The table where the change was made.
 #
