@@ -15,6 +15,8 @@
 # business_id:		The business the file is for.
 # type:				*future*
 #
+# extension:		The extension from the uploaded file. (.doc, .xls, .pdf, etc)
+#
 # status:			The current status of the file.
 #					0 - unknown
 #					1 - Active
@@ -23,6 +25,9 @@
 # name:				The name of the file, given by the user.
 #
 # version:			The version of the file, flexible so user can enter anything, will sort as alphanumeric.
+#
+# permalink:		The url safe version of the file name.  This is automatically created
+#					when a file is uploaded, or the name changed.
 #
 # category:			The category for the file.
 #
