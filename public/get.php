@@ -55,7 +55,7 @@ function ciniki_filedepot_get($ciniki) {
 		. "";
 	
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'filedepot', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.filedepot', array(
 		array('container'=>'files', 'fname'=>'id', 'name'=>'file',
 			'fields'=>array('id', 'type', 'status', 'name', 'version', 'parent_id', 'category', 'description', 'org_filename', 'shared', 'sharing_flags', 'date_added'),
 			),

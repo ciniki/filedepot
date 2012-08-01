@@ -59,7 +59,7 @@ function ciniki_filedepot_add($ciniki) {
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbInsert.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
 	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'filedepot');
+	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.filedepot');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
 	}   
@@ -71,7 +71,7 @@ function ciniki_filedepot_add($ciniki) {
 		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'filedepot', 'file');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
@@ -118,13 +118,13 @@ function ciniki_filedepot_add($ciniki) {
 		. "'" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "', "
 		. "UTC_TIMESTAMP(), UTC_TIMESTAMP())"
 		. "";
-	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'filedepot');
+	$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.filedepot');
 	if( $rc['stat'] != 'ok' ) { 
-		ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
 		return $rc;
 	}
 	if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'701', 'msg'=>'Unable to add file'));
 	}
 	$file_id = $rc['insert_id'];
@@ -144,7 +144,7 @@ function ciniki_filedepot_add($ciniki) {
 	foreach($changelog_fields as $field) {
 		$insert_name = $field;
 		if( isset($ciniki['request']['args'][$field]) && $ciniki['request']['args'][$field] != '' ) {
-			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'filedepot', 'ciniki_filedepot_history', $args['business_id'], 
+			$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', $args['business_id'], 
 				1, 'ciniki_filedepot_files', $file_id, $insert_name, $ciniki['request']['args'][$field]);
 		}
 	}
@@ -164,9 +164,9 @@ function ciniki_filedepot_add($ciniki) {
 				. ") "
 			. "";
 		require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
-		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'filedepot');
+		$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.filedepot');
 		if( $rc['stat'] != 'ok' ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
 			return $rc;
 		}
 	}
@@ -180,13 +180,13 @@ function ciniki_filedepot_add($ciniki) {
 		. "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'filedepot', 'file');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
 	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
 		return $rc;
 	}
 	if( !isset($rc['file']) ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'705', 'msg'=>'Unable to add file'));
 	}
 	$file_uuid = $rc['file']['file_uuid'];
@@ -202,22 +202,29 @@ function ciniki_filedepot_add($ciniki) {
 	$storage_filename = $storage_dirname . '/' . $file_uuid;
 	if( !is_dir($storage_dirname) ) {
 		if( !mkdir($storage_dirname, 0700, true) ) {
-			ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'707', 'msg'=>'Unable to add file'));
 		}
 	}
 	if( !rename($_FILES['uploadfile']['tmp_name'], $storage_filename) ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'filedepot');
+		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
 		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'708', 'msg'=>'Unable to add file'));
 	}
 	
 	//
 	// Commit the database changes
 	//
-    $rc = ciniki_core_dbTransactionCommit($ciniki, 'filedepot');
+    $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.filedepot');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
+
+	//
+	// Update the last_change date in the business modules
+	// Ignore the result, as we don't want to stop user updates if this fails.
+	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'filedepot');
 
 	//
 	// Check if the web module settings should be updated to allow 
@@ -227,6 +234,7 @@ function ciniki_filedepot_add($ciniki) {
 		//
 		// If the file is available to the public, make sure the setting allows it in the web module
 		//
+		$updated = 0;
 		if( isset($args['sharing_flags']) && ($args['sharing_flags']&0x01) == 0x01 ) {
 			$strsql = "INSERT INTO ciniki_web_settings (business_id, detail_key, detail_value, date_added, last_updated) "
 				. "VALUES ('" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "'"
@@ -235,11 +243,12 @@ function ciniki_filedepot_add($ciniki) {
 				. "ON DUPLICATE KEY UPDATE detail_value = 'yes' "
 				. ", last_updated = UTC_TIMESTAMP() "
 				. "";
-			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'web');
+			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.web');
 			if( $rc['stat'] != 'ok' ) {
 				// Don't return the error to the user, it's only an internal error
 				error_log('Unable to set page-downloads-public setting');
 			}
+			$updated = 1;
 		}
 		//
 		// If the file is available to customers, make sure the setting allows it in the web module.
@@ -253,12 +262,21 @@ function ciniki_filedepot_add($ciniki) {
 				. "ON DUPLICATE KEY UPDATE detail_value = 'yes' "
 				. ", last_updated = UTC_TIMESTAMP() "
 				. "";
-			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'web');
+			$rc = ciniki_core_dbInsert($ciniki, $strsql, 'ciniki.web');
 			if( $rc['stat'] != 'ok' ) {
 				// Don't return the error to the user, it's only an internal error
 				error_log('Unable to set page-downloads-public setting');
 			}
+			$updated = 1;
 		}
+
+		//
+		// Update the last_change date in the business modules
+		// Ignore the result, as we don't want to stop user updates if this fails.
+		//
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+		ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'web');
+
 	}
 
 	return array('stat'=>'ok', 'id'=>$file_id);

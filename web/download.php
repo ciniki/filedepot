@@ -26,7 +26,7 @@ function ciniki_filedepot_web_download($ciniki, $business_id, $file_uuid) {
 	}
 	$strsql .= ") "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'filedepot', 'file');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}

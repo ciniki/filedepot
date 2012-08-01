@@ -56,7 +56,7 @@ function ciniki_filedepot_searchQuick($ciniki) {
 		$strsql .= "LIMIT 25 ";
 	}
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'filedepot', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.filedepot', array(
 		array('container'=>'files', 'fname'=>'id', 'name'=>'file',
 			'fields'=>array('id', 'name', 'version', 'org_filename')),
 		));

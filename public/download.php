@@ -48,7 +48,7 @@ function ciniki_filedepot_download($ciniki) {
 		. "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
 		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'filedepot', 'file');
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}

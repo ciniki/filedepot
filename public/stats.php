@@ -48,7 +48,7 @@ function ciniki_filedepot_stats($ciniki) {
 		. "GROUP BY category "
 		. "ORDER BY name "
 		. "";
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'filedepot', array(
+	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.filedepot', array(
 		array('container'=>'sections', 'fname'=>'name', 'name'=>'section',
 			'fields'=>array('name', 'count')),
 		));
