@@ -4,9 +4,20 @@
 // ===========
 // This method will return all the details for a file in the filedepot.
 //
+// Arguments
+// ---------
+// api_key:
+// auth_token:
+// business_id:		The ID of the business the file belongs to.
+// file_id:			The ID of the file to get the details for.
+//
 // Returns
 // -------
-//
+// <rsp stat="ok">
+//		<file id="23" type="0" status="1" name="July Report" version="1.0" 
+//			parent_id="0" category="Reports" description="The monthly report for July 2012"
+//			org_filename="july_12.pdf" shared="Customers" sharing_flags="2" date_added="July 12, 2012 7:45 AM" />
+// </rsp>
 function ciniki_filedepot_get($ciniki) {
     //  
     // Find all the required and optional arguments

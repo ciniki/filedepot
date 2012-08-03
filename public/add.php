@@ -2,11 +2,27 @@
 //
 // Description
 // ===========
-// This function will add a new art catalog piece to the database.
+// This method will add a new file to the filedepot module.
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// api_key:
+// auth_token:
+// business_id:			The ID of the business to add the file to.
+// child_id:			(optional) The ID of the file this one is to replace with a new version.
+//						The version argument must be specified along with child_id.
+// type:				(optional) The type of file.  **Not yet implemented**
+// name:				The name of the file.
+// version:				(optional) The version of the file.  Must be specified if this
+//						file is to be a new version of another specified by child_id.
+// category:			(optional) The category for the file.
+// description:			(optional) The extended description of the file, can be much longer than the name.
+// sharing_flags:		(optional) How the file is shared with the public and customers.  If the
+//						value is zero (0) then the file is private to the business owners and employees.
+//
+//						0x01 - Public, available to general public via the business website.
+//						0x02 - Customers, available only to customers who have logged into the site.
+//						0x04 - Available to a specified list of customers **future**
 // 
 // Returns
 // -------

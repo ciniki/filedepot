@@ -2,12 +2,22 @@
 //
 // Description
 // ===========
-// This method will list the art catalog pieces sorted by category.
+// This method will return a list of files in the file depot.
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// api_key:
+// auth_token:
+// business_id: 		The ID of the business to get the list of files from.
+// category:			(optional) Only get files from this category.
+// sortby:				(optional) How the results should be sorted.  If not
+//						specified, they are sorted by name.
+//					
+//						- name - Sort the results by the name of the files.
+//						- recent - Sort the results by the most recent files first.
 // 
+// limit:				The maximum number of results to return.
+//
 // Returns
 // -------
 //

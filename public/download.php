@@ -2,10 +2,18 @@
 //
 // Description
 // ===========
-// This method will return the file
+// This method will return the file in it's binary form.
+//
+// Arguments
+// ---------
+// api_key:
+// auth_token:
+// business_id:		The ID of the business the requested file belongs to.
+// file_id:			The ID of the file to be downloaded.
 //
 // Returns
 // -------
+// Binary file.
 //
 function ciniki_filedepot_download($ciniki) {
     //  

@@ -2,16 +2,15 @@
 //
 // Description
 // -----------
-// This function will get the history of a field from the ciniki_core_change_logs table.
-// This allows the user to view what has happened to a data element, and if they
-// choose, revert to a previous version.
+// This method will return the history for an element of a file in the filedepot.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:			The ID of the business to get the details for.
-// key:					The detail key to get the history for.
+// business_id:			The ID of the business the requested file belongs to.
+// file_id:				The ID of the file to get the history for.
+// field:				The element to get the history for.
 //
 // Returns
 // -------

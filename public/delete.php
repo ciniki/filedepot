@@ -2,15 +2,19 @@
 //
 // Description
 // ===========
-// This function will update an art catalog piece to the database.
+// This method will remove a file from the filedepot.  Once a file is removed,
+// there is no recovery.
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// api_key:
+// auth_token:
+// business_id:		The ID of the business the file belongs to that is to be removed.
+// file_id:			The ID of the file to be removed.
 // 
 // Returns
 // -------
-// <rsp stat='ok' id='34' />
+// <rsp stat='ok' />
 //
 function ciniki_filedepot_delete($ciniki) {
     //  
