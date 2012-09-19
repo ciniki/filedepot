@@ -13,7 +13,7 @@
 // Returns
 // -------
 //
-function ciniki_atdo_projectChildren($ciniki, $business_id, $project_id) {
+function ciniki_filedepot_projectChildren($ciniki, $business_id, $project_id) {
     
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timezoneOffset');
 	$utc_offset = ciniki_users_timezoneOffset($ciniki);
