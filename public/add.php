@@ -49,7 +49,6 @@ function ciniki_filedepot_add($ciniki) {
         return $rc;
     }   
     $args = $rc['args'];
-	error_log(print_r($args, true));
 
 	$name = $args['name'];
 	if( $args['version'] != '' ) {
