@@ -19,7 +19,7 @@ function ciniki_filedepot_download($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No file specified'), 
@@ -33,18 +33,11 @@ function ciniki_filedepot_download($ciniki) {
     // Make sure this module is activated, and
     // check permission to run this function for this business
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/filedepot/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
     $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.download'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-
-//	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/timezoneOffset.php');
-//	$utc_offset = ciniki_users_timezoneOffset($ciniki);
-
-//	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
-//	require_once($ciniki['config']['core']['modules_dir'] . '/users/private/datetimeFormat.php');
-//	$datetime_format = ciniki_users_datetimeFormat($ciniki);
 
 	//
 	// Get the uuid for the file
@@ -56,6 +49,7 @@ function ciniki_filedepot_download($ciniki) {
 		. "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
 		. "";
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -70,7 +64,7 @@ function ciniki_filedepot_download($ciniki) {
 	//
 	// Move the file into storage
 	//
-	$storage_dirname = $ciniki['config']['core']['storage_dir'] . '/'
+	$storage_dirname = $ciniki['config']['ciniki.core']['storage_dir'] . '/'
 		. $business_uuid[0] . '/' . $business_uuid 
 		. '/filedepot/'
 		. $file_uuid[0];

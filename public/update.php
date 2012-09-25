@@ -2,11 +2,21 @@
 //
 // Description
 // ===========
-// This function will update a file
+// This method will update the details about an existing file in the depot.  If an new version 
+// is to be uploaded, then it should be done with the ciniki.filedepot.add method.
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// api_key:
+// auth_token:
+// business_id:		The ID of the business the existing file is connected to.
+// file_id:			The ID of the file to be updated.
+// project_id:		(optional) The ID of the project the file is connected to.
+// name:			(optional) The new name for the file.
+// version:			(optional) The new version for the file.
+// category:		(optional) The new category for the file.
+// sharing_flags:	(optional) The flags specifing how the file is shared with customers on the website.
+// description:		(optional) The description of the file.
 // 
 // Returns
 // -------
@@ -16,10 +26,11 @@ function ciniki_filedepot_update($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No ID specified'), 
+        'project_id'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No project specified'), 
         'name'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No name specified'), 
         'version'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No version specified'), 
         'category'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No category specified'), 
@@ -59,7 +70,7 @@ function ciniki_filedepot_update($ciniki) {
     // Make sure this module is activated, and
     // check permission to run this function for this business
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/filedepot/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
     $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.update'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -69,12 +80,12 @@ function ciniki_filedepot_update($ciniki) {
 	//  
 	// Turn off autocommit
 	//  
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.filedepot');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
@@ -89,6 +100,7 @@ function ciniki_filedepot_update($ciniki) {
 	// Add all the fields to the change log
 	//
 	$changelog_fields = array(
+		'project_id',
 		'name',
 		'version',
 		'permalink',

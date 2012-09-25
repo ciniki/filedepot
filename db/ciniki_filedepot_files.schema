@@ -12,6 +12,8 @@
 #					the lastest version.  When a new version is uploaded, all old versions
 #					should have their parent_id changed to the new uploaded file id.
 #
+# project_id:		The ID of the project from the ciniki.projects module the file is a part of.
+#
 # business_id:		The business the file is for.
 # type:				*future*
 #
@@ -49,6 +51,7 @@ create table ciniki_filedepot_files (
 	id int not null auto_increment,
 	uuid char(36) not null,
 	parent_id int not null,
+	project_id int not null,
 	business_id int not null,
 	type tinyint unsigned not null,
 	extension varchar(10) not null,
@@ -67,4 +70,4 @@ create table ciniki_filedepot_files (
 	primary key (id),
 	unique index (business_id, permalink), 
 	index (business_id, name)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

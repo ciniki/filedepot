@@ -19,7 +19,7 @@ function ciniki_filedepot_getHistory($ciniki) {
 	//
 	// Find all the required and optional arguments
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
 		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
 		'file_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No file specified'), 
@@ -33,13 +33,13 @@ function ciniki_filedepot_getHistory($ciniki) {
 	//
 	// Check access to business_id as owner, or sys admin
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/filedepot/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
 	$rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.getHistory');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
 
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbGetModuleHistory.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
 	return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', $args['business_id'], 'ciniki_filedepot_files', $args['file_id'], $args['field']);
 }
 ?>

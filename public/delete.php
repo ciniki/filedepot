@@ -20,7 +20,7 @@ function ciniki_filedepot_delete($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/core/private/prepareArgs.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No ID specified'), 
@@ -34,7 +34,7 @@ function ciniki_filedepot_delete($ciniki) {
     // Make sure this module is activated, and
     // check permission to run this function for this business
     //  
-    require_once($ciniki['config']['core']['modules_dir'] . '/filedepot/private/checkAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
     $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.delete'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -44,12 +44,12 @@ function ciniki_filedepot_delete($ciniki) {
 	//  
 	// Turn off autocommit
 	//  
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionStart.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionRollback.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbTransactionCommit.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbQuote.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbDelete.php');
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbAddModuleHistory.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDelete');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
 	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.filedepot');
 	if( $rc['stat'] != 'ok' ) { 
 		return $rc;
@@ -102,7 +102,7 @@ function ciniki_filedepot_delete($ciniki) {
 				. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. "AND id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "' "
 				. "";
-			require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbUpdate.php');
+			ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
 			$rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.filedepot');
 			if( $rc['stat'] != 'ok' ) {
 				ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
@@ -125,7 +125,7 @@ function ciniki_filedepot_delete($ciniki) {
 	//
 	// Move the file into storage
 	//
-	$storage_dirname = $ciniki['config']['core']['storage_dir'] . '/'
+	$storage_dirname = $ciniki['config']['ciniki.core']['storage_dir'] . '/'
 		. $business_uuid[0] . '/' . $business_uuid 
 		. '/filedepot/'
 		. $file_uuid[0];
