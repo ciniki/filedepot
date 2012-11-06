@@ -36,7 +36,7 @@ function ciniki_filedepot_add($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'project_id'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No project specified'),
+		'project_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'errmsg'=>'No project specified'),
 		'child_id'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No file specified'),
 		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No type specified'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No name specified'), 
@@ -49,6 +49,24 @@ function ciniki_filedepot_add($ciniki) {
         return $rc;
     }   
     $args = $rc['args'];
+
+	//
+	// Check that the project id is a number
+	//
+	if( isset($args['project_id']) && $args['project_id'] == '' ) {
+		$args['project_id'] = 0;
+	}
+
+	//
+	// Check the project does exist, and the user has permission to it
+	//
+	if( isset($args['project_id']) && $args['project_id'] > 0 ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'projects', 'private', 'checkAccess');
+		$rc = ciniki_projects_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.add', $args['project_id']);
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+	}
 
 	$name = $args['name'];
 	if( $args['version'] != '' ) {
