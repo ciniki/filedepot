@@ -16,7 +16,7 @@ function ciniki_filedepot_checkAccess($ciniki, $business_id, $method) {
 	//
 	// Check if the business is active and the module is enabled
 	//
-	require_once($ciniki['config']['core']['modules_dir'] . '/businesses/private/checkModuleAccess.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'checkModuleAccess');
 	$rc = ciniki_businesses_checkModuleAccess($ciniki, $business_id, 'ciniki', 'filedepot');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
@@ -49,7 +49,7 @@ function ciniki_filedepot_checkAccess($ciniki, $business_id, $method) {
 		. "AND package = 'ciniki' "
 		. "AND (permission_group = 'owners' OR permission_group = 'employees') "
 		. "";
-	require_once($ciniki['config']['core']['modules_dir'] . '/core/private/dbHashQuery.php');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
 	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.businesses', 'user');
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
