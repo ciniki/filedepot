@@ -75,7 +75,7 @@ function ciniki_filedepot_list($ciniki) {
 	if( isset($args['category']) ) {
 		$strsql .= "AND (ciniki_filedepot_files.category = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "'";
 		if( $args['category'] == 'Uncategorized' ) {
-			$strsql .= " OR category = ''";
+			$strsql .= " OR ciniki_filedepot_files.category = ''";
 		}
 		$strsql .= ") ";
 	}
