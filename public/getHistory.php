@@ -21,9 +21,9 @@ function ciniki_filedepot_getHistory($ciniki) {
 	//
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
 	$rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'file_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No file specified'), 
-		'field'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No field specified'), 
+		'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
+		'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Field'), 
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

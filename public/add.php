@@ -35,15 +35,15 @@ function ciniki_filedepot_add($ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-		'project_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'errmsg'=>'No project specified'),
-		'child_id'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No file specified'),
-		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'errmsg'=>'No type specified'),
-        'name'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No name specified'), 
-        'version'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'errmsg'=>'No version specified'), 
-        'category'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No category specified'), 
-        'description'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No description specified'), 
-        'sharing_flags'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'errmsg'=>'No location specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+		'project_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Project'),
+		'child_id'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Child'),
+		'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Type'),
+        'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
+        'version'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Version'), 
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'), 
+        'sharing_flags'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Sharing Flags'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

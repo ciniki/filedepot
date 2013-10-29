@@ -27,10 +27,10 @@ function ciniki_filedepot_list($ciniki) {
     //  
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'errmsg'=>'No business specified'), 
-        'category'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No status specified'), 
-        'sortby'=>array('required'=>'no', 'blank'=>'yes', 'errmsg'=>'No sort type specified'), 
-        'limit'=>array('required'=>'no', 'blank'=>'no', 'errmsg'=>'No limit specified'), 
+        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
+        'sortby'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sort Order'), 
+        'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
