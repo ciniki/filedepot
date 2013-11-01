@@ -160,8 +160,8 @@ function ciniki_filedepot_delete($ciniki) {
 	//
 	// Log the delete in the history
 	//
-	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', $args['business_id'], 
-		3, 'ciniki_filedepot_files', $args['file_id'], '', '');
+	$rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', 
+		$args['business_id'], 3, 'ciniki_filedepot_files', $args['file_id'], '', '');
 
 	//
 	// Commit the database changes
