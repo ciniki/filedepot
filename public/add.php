@@ -50,6 +50,17 @@ function ciniki_filedepot_add($ciniki) {
     }   
     $args = $rc['args'];
 
+    //  
+    // Make sure this module is activated, and
+    // check permission to run this function for this business
+    //  
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
+    $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.add'); 
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }   
+	$modules = $rc['modules'];
+
 	//
 	// Check that the project id is a number
 	//
@@ -73,17 +84,6 @@ function ciniki_filedepot_add($ciniki) {
 		$name .= "-" . $args['version'];
 	}
 	$args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($name)));
-
-    //  
-    // Make sure this module is activated, and
-    // check permission to run this function for this business
-    //  
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
-    $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.add'); 
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
-    }   
-	$modules = $rc['modules'];
 
 	//  
 	// Turn off autocommit
