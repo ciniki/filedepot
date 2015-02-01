@@ -564,6 +564,6 @@ function ciniki_filedepot_main() {
 	};
 
 	this.downloadFile = function(fid) {
-		window.open(M.api.getUploadURL('ciniki.filedepot.download', {'business_id':M.curBusinessID, 'file_id':fid}));
+		M.api.openFile('ciniki.filedepot.download', {'business_id':M.curBusinessID, 'file_id':fid});
 	};
 }
