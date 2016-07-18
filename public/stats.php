@@ -6,7 +6,7 @@
 //
 // Arguments
 // ---------
-// user_id: 		The user making the request
+// user_id:         The user making the request
 // 
 // Returns
 // -------
@@ -15,7 +15,7 @@ function ciniki_filedepot_stats($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         )); 
@@ -28,40 +28,40 @@ function ciniki_filedepot_stats($ciniki) {
     // Make sure this module is activated, and
     // check permission to run this function for this business
     //  
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
     $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.stats'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
 
-	$rsp = array('stat'=>'ok', 'stats'=>array());
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
-	
-	//
-	// Get the category stats
-	//
-	$strsql = "SELECT IF(category='', 'Uncategorized', category) AS name, COUNT(*) AS count "
-		. "FROM ciniki_filedepot_files "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND parent_id = 0 "
-		. "GROUP BY category "
-		. "ORDER BY name "
-		. "";
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
-	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.filedepot', array(
-		array('container'=>'sections', 'fname'=>'name', 'name'=>'section',
-			'fields'=>array('name', 'count')),
-		));
-	// error_log($strsql);
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( !isset($rc['sections']) ) {
-		return array('stat'=>'ok', 'stats'=>array('categories'=>array(array('section'=>array('name'=>'Uncategorized', 'count'=>'0')))));
-	}
-	$rsp['stats']['categories'] = $rc['sections'];
-	
-	return $rsp;
+    $rsp = array('stat'=>'ok', 'stats'=>array());
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
+    
+    //
+    // Get the category stats
+    //
+    $strsql = "SELECT IF(category='', 'Uncategorized', category) AS name, COUNT(*) AS count "
+        . "FROM ciniki_filedepot_files "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND parent_id = 0 "
+        . "GROUP BY category "
+        . "ORDER BY name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+    $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.filedepot', array(
+        array('container'=>'sections', 'fname'=>'name', 'name'=>'section',
+            'fields'=>array('name', 'count')),
+        ));
+    // error_log($strsql);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( !isset($rc['sections']) ) {
+        return array('stat'=>'ok', 'stats'=>array('categories'=>array(array('section'=>array('name'=>'Uncategorized', 'count'=>'0')))));
+    }
+    $rsp['stats']['categories'] = $rc['sections'];
+    
+    return $rsp;
 }
 ?>
