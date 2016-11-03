@@ -92,7 +92,7 @@ function ciniki_filedepot_get($ciniki) {
         return $rc;
     }
     if( !isset($rc['files']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'702', 'msg'=>'Unable to find file'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.filedepot.15', 'msg'=>'Unable to find file'));
     }
     $file = $rc['files'][0]['file'];
     if( isset($rc['files'][0]) ) {

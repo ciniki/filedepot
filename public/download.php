@@ -55,7 +55,7 @@ function ciniki_filedepot_download($ciniki) {
         return $rc;
     }
     if( !isset($rc['file']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'718', 'msg'=>'Unable to find file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.13', 'msg'=>'Unable to find file'));
     }
     $filename = $rc['file']['name'] . '.' . $rc['file']['extension'];
     $file_uuid = $rc['file']['file_uuid'];
@@ -70,7 +70,7 @@ function ciniki_filedepot_download($ciniki) {
         . $file_uuid[0];
     $storage_filename = $storage_dirname . '/' . $file_uuid;
     if( !is_file($storage_filename) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'719', 'msg'=>'Unable to find file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.14', 'msg'=>'Unable to find file'));
     }
 
     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 

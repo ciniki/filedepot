@@ -62,7 +62,7 @@ function ciniki_filedepot_update($ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'714', 'msg'=>'You already have a file with this name, please choose another name'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.17', 'msg'=>'You already have a file with this name, please choose another name'));
         }
     }
 
@@ -125,7 +125,7 @@ function ciniki_filedepot_update($ciniki) {
     }
     if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'709', 'msg'=>'Unable to update file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.18', 'msg'=>'Unable to update file'));
     }
 
     //

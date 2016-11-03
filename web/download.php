@@ -31,7 +31,7 @@ function ciniki_filedepot_web_download($ciniki, $business_id, $file_uuid) {
         return $rc;
     }
     if( !isset($rc['file']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'715', 'msg'=>'Unable to find file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.19', 'msg'=>'Unable to find file'));
     }
     $filename = $rc['file']['name'] . '.' . $rc['file']['extension'];
     $file_uuid = $rc['file']['file_uuid'];
@@ -46,7 +46,7 @@ function ciniki_filedepot_web_download($ciniki, $business_id, $file_uuid) {
         . $file_uuid[0];
     $storage_filename = $storage_dirname . '/' . $file_uuid;
     if( !is_file($storage_filename) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'716', 'msg'=>'Unable to find file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.20', 'msg'=>'Unable to find file'));
     }
 
     return array('stat'=>'ok', 'storage_filename'=>$storage_filename, 'filename'=>$filename);

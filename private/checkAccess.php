@@ -28,7 +28,7 @@ function ciniki_filedepot_checkAccess($ciniki, $business_id, $method) {
     }
 
     if( !isset($rc['ruleset']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'699', 'msg'=>'No permissions granted'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.1', 'msg'=>'No permissions granted'));
     }
 
     //
@@ -66,6 +66,6 @@ function ciniki_filedepot_checkAccess($ciniki, $business_id, $method) {
     //
     // By default, fail
     //
-    return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'700', 'msg'=>'Access denied.'));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.2', 'msg'=>'Access denied.'));
 }
 ?>

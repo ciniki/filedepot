@@ -112,14 +112,14 @@ function ciniki_filedepot_add($ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'713', 'msg'=>'You already have a file with this name, please choose another name'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.3', 'msg'=>'You already have a file with this name, please choose another name'));
     }
 
     //
     // Check to see if an image was uploaded
     //
     if( isset($_FILES['uploadfile']['error']) && $_FILES['uploadfile']['error'] == UPLOAD_ERR_INI_SIZE ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'704', 'msg'=>'Upload failed, file too large.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.4', 'msg'=>'Upload failed, file too large.'));
     }
     // FIXME: Add other checkes for $_FILES['uploadfile']['error']
 
@@ -127,7 +127,7 @@ function ciniki_filedepot_add($ciniki) {
     // Make sure a file was submitted
     //
     if( !isset($_FILES) || !isset($_FILES['uploadfile']) || $_FILES['uploadfile']['tmp_name'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'706', 'msg'=>'No file specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.5', 'msg'=>'No file specified.'));
     }
 
     $args['org_filename'] = $_FILES['uploadfile']['name'];
@@ -162,7 +162,7 @@ function ciniki_filedepot_add($ciniki) {
     }
     if( !isset($rc['insert_id']) || $rc['insert_id'] < 1 ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'701', 'msg'=>'Unable to add file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.6', 'msg'=>'Unable to add file'));
     }
     $file_id = $rc['insert_id'];
 
@@ -225,7 +225,7 @@ function ciniki_filedepot_add($ciniki) {
     }
     if( !isset($rc['file']) ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'705', 'msg'=>'Unable to add file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.7', 'msg'=>'Unable to add file'));
     }
     $file_uuid = $rc['file']['file_uuid'];
     $business_uuid = $rc['file']['business_uuid'];
@@ -241,12 +241,12 @@ function ciniki_filedepot_add($ciniki) {
     if( !is_dir($storage_dirname) ) {
         if( !mkdir($storage_dirname, 0700, true) ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'707', 'msg'=>'Unable to add file'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.8', 'msg'=>'Unable to add file'));
         }
     }
     if( !rename($_FILES['uploadfile']['tmp_name'], $storage_filename) ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'708', 'msg'=>'Unable to add file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.9', 'msg'=>'Unable to add file'));
     }
     
     //

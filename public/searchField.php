@@ -38,7 +38,7 @@ function ciniki_filedepot_searchField($ciniki) {
     //
     if( $args['field'] != 'category'
         ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'703', 'msg'=>'Unvalid search field'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.16', 'msg'=>'Unvalid search field'));
     }
     //
     // Get the number of faqs in each status for the business, 

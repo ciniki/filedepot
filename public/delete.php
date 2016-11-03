@@ -71,7 +71,7 @@ function ciniki_filedepot_delete($ciniki) {
     }
     if( !isset($rc['file']) ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'710', 'msg'=>'Unable to delete file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.10', 'msg'=>'Unable to delete file'));
     }
     $file_uuid = $rc['file']['file_uuid'];
     $business_uuid = $rc['file']['business_uuid'];
@@ -146,7 +146,7 @@ function ciniki_filedepot_delete($ciniki) {
     }
     if( !isset($rc['num_affected_rows']) || $rc['num_affected_rows'] != 1 ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'711', 'msg'=>'Unable to delete file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.11', 'msg'=>'Unable to delete file'));
     }
 
     //
@@ -154,7 +154,7 @@ function ciniki_filedepot_delete($ciniki) {
     //
     if( !unlink($storage_filename) ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.filedepot');
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'712', 'msg'=>'Unable to delete file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.12', 'msg'=>'Unable to delete file'));
     }
 
     //
