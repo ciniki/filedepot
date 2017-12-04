@@ -9,7 +9,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the file belongs to that is to be removed.
+// tnid:     The ID of the tenant the file belongs to that is to be removed.
 // file_id:         The ID of the file to be removed.
 // 
 // Returns
@@ -22,7 +22,7 @@ function ciniki_filedepot_delete($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -32,10 +32,10 @@ function ciniki_filedepot_delete($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
-    $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.delete'); 
+    $rc = ciniki_filedepot_checkAccess($ciniki, $args['tnid'], 'ciniki.filedepot.delete'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -58,11 +58,11 @@ function ciniki_filedepot_delete($ciniki) {
     //
     // Get the uuid for the file
     //
-    $strsql = "SELECT ciniki_businesses.uuid AS business_uuid, ciniki_filedepot_files.uuid AS file_uuid, parent_id "
-        . "FROM ciniki_filedepot_files, ciniki_businesses "
+    $strsql = "SELECT ciniki_tenants.uuid AS tenant_uuid, ciniki_filedepot_files.uuid AS file_uuid, parent_id "
+        . "FROM ciniki_filedepot_files, ciniki_tenants "
         . "WHERE ciniki_filedepot_files.id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
-        . "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
+        . "AND ciniki_filedepot_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_filedepot_files.tnid = ciniki_tenants.id "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
     if( $rc['stat'] != 'ok' ) {
@@ -74,7 +74,7 @@ function ciniki_filedepot_delete($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.10', 'msg'=>'Unable to delete file'));
     }
     $file_uuid = $rc['file']['file_uuid'];
-    $business_uuid = $rc['file']['business_uuid'];
+    $tenant_uuid = $rc['file']['tenant_uuid'];
     $old_parent_id = $rc['file']['parent_id'];
 
     //
@@ -85,7 +85,7 @@ function ciniki_filedepot_delete($ciniki) {
     if( $old_parent_id == 0 ) {
         $strsql = "SELECT id, parent_id, version "
             . "FROM ciniki_filedepot_files "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
             . "ORDER BY id DESC "
             . "";
@@ -99,7 +99,7 @@ function ciniki_filedepot_delete($ciniki) {
             $parent_id = $rc['rows'][0]['id'];
             $strsql = "UPDATE ciniki_filedepot_files "
                 . "SET parent_id = 0, last_updated = UTC_TIMESTAMP() "
-                . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "' "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
@@ -111,7 +111,7 @@ function ciniki_filedepot_delete($ciniki) {
             $strsql = "UPDATE ciniki_filedepot_files "
                 . "SET parent_id = '" . ciniki_core_dbQuote($ciniki, $parent_id) . "', "
                 . "last_updated = UTC_TIMESTAMP() "
-                . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND parent_id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
                 . "";
             $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.filedepot');
@@ -126,7 +126,7 @@ function ciniki_filedepot_delete($ciniki) {
     // Move the file into storage
     //
     $storage_dirname = $ciniki['config']['ciniki.core']['storage_dir'] . '/'
-        . $business_uuid[0] . '/' . $business_uuid 
+        . $tenant_uuid[0] . '/' . $tenant_uuid 
         . '/filedepot/'
         . $file_uuid[0];
     $storage_filename = $storage_dirname . '/' . $file_uuid;
@@ -135,7 +135,7 @@ function ciniki_filedepot_delete($ciniki) {
     // Start building the delete SQL
     //
     $strsql = "DELETE FROM ciniki_filedepot_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
         . "";
 
@@ -161,7 +161,7 @@ function ciniki_filedepot_delete($ciniki) {
     // Log the delete in the history
     //
     $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', 
-        $args['business_id'], 3, 'ciniki_filedepot_files', $args['file_id'], '', '');
+        $args['tnid'], 3, 'ciniki_filedepot_files', $args['file_id'], '', '');
 
     //
     // Commit the database changes
@@ -172,18 +172,18 @@ function ciniki_filedepot_delete($ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'filedepot');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'filedepot');
 
     // 
     // Update the web settings
     //
     if( isset($modules['ciniki.web']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'settingsUpdateDownloads');
-        $rc = ciniki_web_settingsUpdateDownloads($ciniki, $modules, $args['business_id']);
+        $rc = ciniki_web_settingsUpdateDownloads($ciniki, $modules, $args['tnid']);
         if( $rc['stat'] != 'ok' ) {
             // Don't return error code to user, they successfully updated the record
             error_log("ERR: " . $rc['code'] . ' - ' . $rc['msg']);

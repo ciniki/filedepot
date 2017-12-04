@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the requested file belongs to.
+// tnid:     The ID of the tenant the requested file belongs to.
 // file_id:         The ID of the file to be downloaded.
 //
 // Returns
@@ -21,7 +21,7 @@ function ciniki_filedepot_download($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -31,10 +31,10 @@ function ciniki_filedepot_download($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
-    $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.download'); 
+    $rc = ciniki_filedepot_checkAccess($ciniki, $args['tnid'], 'ciniki.filedepot.download'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -42,12 +42,12 @@ function ciniki_filedepot_download($ciniki) {
     //
     // Get the uuid for the file
     //
-    $strsql = "SELECT ciniki_businesses.uuid AS business_uuid, ciniki_filedepot_files.uuid AS file_uuid, "
+    $strsql = "SELECT ciniki_tenants.uuid AS tenant_uuid, ciniki_filedepot_files.uuid AS file_uuid, "
         . "ciniki_filedepot_files.name, ciniki_filedepot_files.extension "
-        . "FROM ciniki_filedepot_files, ciniki_businesses "
+        . "FROM ciniki_filedepot_files, ciniki_tenants "
         . "WHERE ciniki_filedepot_files.id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
-        . "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
+        . "AND ciniki_filedepot_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_filedepot_files.tnid = ciniki_tenants.id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
@@ -59,13 +59,13 @@ function ciniki_filedepot_download($ciniki) {
     }
     $filename = $rc['file']['name'] . '.' . $rc['file']['extension'];
     $file_uuid = $rc['file']['file_uuid'];
-    $business_uuid = $rc['file']['business_uuid'];
+    $tenant_uuid = $rc['file']['tenant_uuid'];
 
     //
     // Move the file into storage
     //
     $storage_dirname = $ciniki['config']['ciniki.core']['storage_dir'] . '/'
-        . $business_uuid[0] . '/' . $business_uuid 
+        . $tenant_uuid[0] . '/' . $tenant_uuid 
         . '/filedepot/'
         . $file_uuid[0];
     $storage_filename = $storage_dirname . '/' . $file_uuid;

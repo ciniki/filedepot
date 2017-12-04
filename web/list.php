@@ -10,11 +10,11 @@
 //  <event id="" name="" />
 // </events>
 //
-function ciniki_filedepot_web_list($ciniki, $business_id) {
+function ciniki_filedepot_web_list($ciniki, $tnid) {
 
     $strsql = "SELECT ciniki_filedepot_files.id, category AS cname, name, extension, version, description, permalink "
         . "FROM ciniki_filedepot_files "
-        . "WHERE ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' " 
+        . "WHERE ciniki_filedepot_files.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' " 
         . "AND status = 1 "
         . "AND parent_id = 0 "
         . "AND ("

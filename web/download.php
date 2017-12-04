@@ -7,16 +7,16 @@
 // Returns
 // -------
 //
-function ciniki_filedepot_web_download($ciniki, $business_id, $file_uuid) {
+function ciniki_filedepot_web_download($ciniki, $tnid, $file_uuid) {
     //
     // Get the uuid for the file
     //
-    $strsql = "SELECT ciniki_businesses.uuid AS business_uuid, ciniki_filedepot_files.uuid AS file_uuid, "
+    $strsql = "SELECT ciniki_tenants.uuid AS tenant_uuid, ciniki_filedepot_files.uuid AS file_uuid, "
         . "ciniki_filedepot_files.name, ciniki_filedepot_files.extension "
-        . "FROM ciniki_filedepot_files, ciniki_businesses "
+        . "FROM ciniki_filedepot_files, ciniki_tenants "
         . "WHERE CONCAT_WS('.', ciniki_filedepot_files.permalink, ciniki_filedepot_files.extension) = '" . ciniki_core_dbQuote($ciniki, $file_uuid) . "' "
-        . "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
+        . "AND ciniki_filedepot_files.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ciniki_filedepot_files.tnid = ciniki_tenants.id "
         . "AND ciniki_filedepot_files.status = 1 "
         // Verify requesting user has permission
         . "AND ("
@@ -35,13 +35,13 @@ function ciniki_filedepot_web_download($ciniki, $business_id, $file_uuid) {
     }
     $filename = $rc['file']['name'] . '.' . $rc['file']['extension'];
     $file_uuid = $rc['file']['file_uuid'];
-    $business_uuid = $rc['file']['business_uuid'];
+    $tenant_uuid = $rc['file']['tenant_uuid'];
 
     //
     // Move the file into storage
     //
     $storage_dirname = $ciniki['config']['core']['storage_dir'] . '/'
-        . $business_uuid[0] . '/' . $business_uuid 
+        . $tenant_uuid[0] . '/' . $tenant_uuid 
         . '/filedepot/'
         . $file_uuid[0];
     $storage_filename = $storage_dirname . '/' . $file_uuid;

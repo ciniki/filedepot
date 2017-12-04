@@ -29,7 +29,7 @@ function ciniki_filedepot_main() {
                 'noData':'No Files found', },
         };
         this.menu.liveSearchCb = function(s, i, v) {
-            M.api.getJSONBgCb('ciniki.filedepot.searchQuick', {'business_id':M.curBusinessID, 'start_needle':v, 'limit':'15'},
+            M.api.getJSONBgCb('ciniki.filedepot.searchQuick', {'tnid':M.curTenantID, 'start_needle':v, 'limit':'15'},
                 function(rsp) {
                     M.ciniki_filedepot_main.menu.liveSearchShow(s, null, M.gE(M.ciniki_filedepot_main.menu.panelUID + '_' + s), rsp.files);
                 });
@@ -116,13 +116,13 @@ function ciniki_filedepot_main() {
         };
         this.add.liveSearchCb = function(s, i, value) {
             if( i == 'category' ) {
-                var rsp = M.api.getJSONBgCb('ciniki.filedepot.searchField', {'business_id':M.curBusinessID, 'field':i, 'start_needle':value, 'limit':15},
+                var rsp = M.api.getJSONBgCb('ciniki.filedepot.searchField', {'tnid':M.curTenantID, 'field':i, 'start_needle':value, 'limit':15},
                     function(rsp) {
                         M.ciniki_filedepot_main.add.liveSearchShow(s, i, M.gE(M.ciniki_filedepot_main.add.panelUID + '_' + i), rsp.results);
                     });
             }
             if( i == 'project_id' ) {
-                var rsp = M.api.getJSONBgCb('ciniki.projects.searchNames', {'business_id':M.curBusinessID, 'start_needle':value, 'limit':25},
+                var rsp = M.api.getJSONBgCb('ciniki.projects.searchNames', {'tnid':M.curTenantID, 'start_needle':value, 'limit':25},
                     function(rsp) {
                         M.ciniki_filedepot_main.add.liveSearchShow(s, i, M.gE(M.ciniki_filedepot_main.add.panelUID + '_' + i), rsp['projects']);
                     });
@@ -270,13 +270,13 @@ function ciniki_filedepot_main() {
         };
         this.edit.liveSearchCb = function(s, i, value) {
             if( i == 'category' ) {
-                var rsp = M.api.getJSONBgCb('ciniki.filedepot.searchField', {'business_id':M.curBusinessID, 'field':i, 'start_needle':value, 'limit':15},
+                var rsp = M.api.getJSONBgCb('ciniki.filedepot.searchField', {'tnid':M.curTenantID, 'field':i, 'start_needle':value, 'limit':15},
                     function(rsp) {
                         M.ciniki_filedepot_main.edit.liveSearchShow(s, i, M.gE(M.ciniki_filedepot_main.edit.panelUID + '_' + i), rsp.results);
                     });
             }
             if( i == 'project_id' ) {
-                var rsp = M.api.getJSONBgCb('ciniki.projects.searchNames', {'business_id':M.curBusinessID, 'start_needle':value, 'limit':25},
+                var rsp = M.api.getJSONBgCb('ciniki.projects.searchNames', {'tnid':M.curTenantID, 'start_needle':value, 'limit':25},
                     function(rsp) {
                         M.ciniki_filedepot_main.edit.liveSearchShow(s, i, M.gE(M.ciniki_filedepot_main.edit.panelUID + '_' + i), rsp['projects']);
                     });
@@ -305,7 +305,7 @@ function ciniki_filedepot_main() {
             this.removeLiveSearch(s, 'project_id');
         };
         this.edit.fieldHistoryArgs = function(s, i) {
-            return {'method':'ciniki.filedepot.getHistory', 'args':{'business_id':M.curBusinessID, 
+            return {'method':'ciniki.filedepot.getHistory', 'args':{'tnid':M.curTenantID, 
                 'file_id':this.file_id, 'field':i}};
         };
 
@@ -348,7 +348,7 @@ function ciniki_filedepot_main() {
     this.showMenu = function(cb, listby, category) {
         this.menu.data = {};
         var rsp = M.api.getJSONCb('ciniki.filedepot.stats', 
-            {'business_id':M.curBusinessID}, function(rsp) {
+            {'tnid':M.curTenantID}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -371,10 +371,10 @@ function ciniki_filedepot_main() {
         var args = {};
         if( this.menu.listby == 'category' ) {
             this.menu.sections._list.label = decodeURIComponent(this.menu.category);
-            args = {'business_id':M.curBusinessID, 'category':this.menu.category};
+            args = {'tnid':M.curTenantID, 'category':this.menu.category};
         } else {
             this.menu.sections._list.label = 'Recent uploads';
-            args = {'business_id':M.curBusinessID, 'sortby':'recent', 'limit':15};
+            args = {'tnid':M.curTenantID, 'sortby':'recent', 'limit':15};
         }
         var rsp = M.api.getJSONCb('ciniki.filedepot.list', args, function(rsp) {
             if( rsp.stat != 'ok' ) {
@@ -399,7 +399,7 @@ function ciniki_filedepot_main() {
             this.add.data.project_id = pid;
             this.add.data.project_name = unescape(pname);
         }
-        if( M.curBusiness.modules['ciniki.projects'] != null ) {
+        if( M.curTenant.modules['ciniki.projects'] != null ) {
             this.add.sections.info.fields.project_id.active = 'yes';
         } else {
             this.add.sections.info.fields.project_id.active = 'no';
@@ -411,7 +411,7 @@ function ciniki_filedepot_main() {
     this.showAddVersion = function(cb) {
         this.add.reset();
         this.add.child_id = this.file.file_id;
-        if( M.curBusiness.modules['ciniki.projects'] != null ) {
+        if( M.curTenant.modules['ciniki.projects'] != null ) {
             this.add.sections.info.fields.project_id.active = 'yes';
         } else {
             this.add.sections.info.fields.project_id.active = 'no';
@@ -435,11 +435,11 @@ function ciniki_filedepot_main() {
         }
 
         // Add the project if does not already exist
-        if( M.curBusiness.modules['ciniki.projects'] != null && this.add.formValue('project_id') == 0 ) {
+        if( M.curTenant.modules['ciniki.projects'] != null && this.add.formValue('project_id') == 0 ) {
             var project_name = M.gE(this.add.panelUID + '_project_id_fkidstr').value;
             if( project_name != '' ) {
                 var rsp = M.api.getJSONCb('ciniki.projects.add', 
-                    {'business_id':M.curBusinessID, 'name':encodeURIComponent(project_name)}, function(rsp) {
+                    {'tnid':M.curTenantID, 'name':encodeURIComponent(project_name)}, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
                             return false;
@@ -458,7 +458,7 @@ function ciniki_filedepot_main() {
     this.addFileFinish = function() {
         var c = this.add.serializeFormData('yes');
         var rsp = M.api.postJSONFormData('ciniki.filedepot.add', 
-            {'business_id':M.curBusinessID, 'child_id':this.add.child_id}, c,
+            {'tnid':M.curTenantID, 'child_id':this.add.child_id}, c,
             function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -476,7 +476,7 @@ function ciniki_filedepot_main() {
             this.file.file_id = fid;
         }
         var rsp = M.api.getJSONCb('ciniki.filedepot.get', 
-            {'business_id':M.curBusinessID, 'file_id':this.file.file_id}, function(rsp) {
+            {'tnid':M.curTenantID, 'file_id':this.file.file_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -489,7 +489,7 @@ function ciniki_filedepot_main() {
                 } else {
                     p.sections._description.visible = 'yes';
                 }
-                if( M.curBusiness.modules['ciniki.projects'] != null ) {
+                if( M.curTenant.modules['ciniki.projects'] != null ) {
                     p.sections.info.list.project_name.visible = 'yes';
                 } else {
                     p.sections.info.list.project_name.visible = 'no';
@@ -505,13 +505,13 @@ function ciniki_filedepot_main() {
             this.edit.file_id = fid;
         }
         var rsp = M.api.getJSONCb('ciniki.filedepot.get', 
-            {'business_id':M.curBusinessID, 'file_id':this.edit.file_id}, function(rsp) {
+            {'tnid':M.curTenantID, 'file_id':this.edit.file_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 var p = M.ciniki_filedepot_main.edit;
-                if( M.curBusiness.modules['ciniki.projects'] != null ) {
+                if( M.curTenant.modules['ciniki.projects'] != null ) {
                     p.sections.info.fields.project_id.active = 'yes';
                 } else {
                     p.sections.info.fields.project_id.active = 'no';
@@ -527,7 +527,7 @@ function ciniki_filedepot_main() {
 
         if( c != '' ) {
             var rsp = M.api.postJSONFormData('ciniki.filedepot.update', 
-                {'business_id':M.curBusinessID, 'file_id':this.edit.file_id}, c,
+                {'tnid':M.curTenantID, 'file_id':this.edit.file_id}, c,
                     function(rsp) {
                         if( rsp['stat'] != 'ok' ) {
                             M.api.err(rsp);
@@ -542,7 +542,7 @@ function ciniki_filedepot_main() {
     this.deleteFile = function(fid) {
         if( confirm('Are you sure you want to delete \'' + this.file.data.name + '\'?  All information about it will be removed and unrecoverable.') ) {
             var rsp = M.api.getJSONCb('ciniki.filedepot.delete', 
-                {'business_id':M.curBusinessID, 'file_id':fid}, function(rsp) {
+                {'tnid':M.curTenantID, 'file_id':fid}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -564,6 +564,6 @@ function ciniki_filedepot_main() {
     };
 
     this.downloadFile = function(fid) {
-        M.api.openFile('ciniki.filedepot.download', {'business_id':M.curBusinessID, 'file_id':fid});
+        M.api.openFile('ciniki.filedepot.download', {'tnid':M.curTenantID, 'file_id':fid});
     };
 }

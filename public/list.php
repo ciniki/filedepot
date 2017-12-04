@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the list of files from.
+// tnid:         The ID of the tenant to get the list of files from.
 // category:            (optional) Only get files from this category.
 // sortby:              (optional) How the results should be sorted.  If not
 //                      specified, they are sorted by name.
@@ -27,7 +27,7 @@ function ciniki_filedepot_list($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'), 
         'sortby'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sort Order'), 
         'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
@@ -39,10 +39,10 @@ function ciniki_filedepot_list($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
-    $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.list'); 
+    $rc = ciniki_filedepot_checkAccess($ciniki, $args['tnid'], 'ciniki.filedepot.list'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -67,9 +67,9 @@ function ciniki_filedepot_list($ciniki) {
     }
     $strsql .= "FROM ciniki_filedepot_files ";
     if( isset($modules['ciniki.projects']) ) {
-        $strsql .= "LEFT JOIN ciniki_projects ON (ciniki_filedepot_files.project_id = ciniki_projects.id AND ciniki_projects.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "') ";
+        $strsql .= "LEFT JOIN ciniki_projects ON (ciniki_filedepot_files.project_id = ciniki_projects.id AND ciniki_projects.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "') ";
     }
-    $strsql .= "WHERE ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+    $strsql .= "WHERE ciniki_filedepot_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_filedepot_files.parent_id = 0 "
         . "AND ciniki_filedepot_files.status = 1 ";
     if( isset($args['category']) ) {

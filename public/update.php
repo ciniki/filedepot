@@ -9,7 +9,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business the existing file is connected to.
+// tnid:     The ID of the tenant the existing file is connected to.
 // file_id:         The ID of the file to be updated.
 // project_id:      (optional) The ID of the project the file is connected to.
 // name:            (optional) The new name for the file.
@@ -28,7 +28,7 @@ function ciniki_filedepot_update($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'file_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'File'), 
         'project_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Project'), 
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'), 
@@ -53,7 +53,7 @@ function ciniki_filedepot_update($ciniki) {
         // Make sure the permalink is unique
         //
         $strsql = "SELECT id, name, permalink FROM ciniki_filedepot_files "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' "
             . "";
@@ -68,10 +68,10 @@ function ciniki_filedepot_update($ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
-    $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.update'); 
+    $rc = ciniki_filedepot_checkAccess($ciniki, $args['tnid'], 'ciniki.filedepot.update'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -112,11 +112,11 @@ function ciniki_filedepot_update($ciniki) {
     foreach($changelog_fields as $field) {
         if( isset($args[$field]) ) {
             $strsql .= ", $field = '" . ciniki_core_dbQuote($ciniki, $args[$field]) . "' ";
-            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', $args['business_id'], 
+            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', $args['tnid'], 
                 2, 'ciniki_filedepot_files', $args['file_id'], $field, $args[$field]);
         }
     }
-    $strsql .= "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+    $strsql .= "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['file_id']) . "' ";
     $rc = ciniki_core_dbUpdate($ciniki, $strsql, 'ciniki.filedepot');
     if( $rc['stat'] != 'ok' ) {
@@ -137,18 +137,18 @@ function ciniki_filedepot_update($ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'filedepot');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'filedepot');
 
     // 
     // Update the web settings
     //
     if( isset($modules['ciniki.web']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'web', 'private', 'settingsUpdateDownloads');
-        $rc = ciniki_web_settingsUpdateDownloads($ciniki, $modules, $args['business_id']);
+        $rc = ciniki_web_settingsUpdateDownloads($ciniki, $modules, $args['tnid']);
         if( $rc['stat'] != 'ok' ) {
             // Don't return error code to user, they successfully updated the record
             error_log("ERR: " . $rc['code'] . ' - ' . $rc['msg']);

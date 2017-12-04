@@ -1,7 +1,7 @@
-Ciniki - Small Business Management Platform
+Ciniki - Multitenant Cloud Platform
 ===========================================
 
-The file depot module stores uploaded files for a business.  These files can then
+The file depot module stores uploaded files for a tenant.  These files can then
 be shared on the website, with customers or private for employees.
 
 License

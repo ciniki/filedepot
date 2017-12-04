@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the file to.
+// tnid:         The ID of the tenant to add the file to.
 // project_id:          (optional) The ID of the project in ciniki.projects module the file is connected to.
 // child_id:            (optional) The ID of the file this one is to replace with a new version.
 //                      The version argument must be specified along with child_id.
@@ -19,9 +19,9 @@
 // category:            (optional) The category for the file.
 // description:         (optional) The extended description of the file, can be much longer than the name.
 // sharing_flags:       (optional) How the file is shared with the public and customers.  If the
-//                      value is zero (0) then the file is private to the business owners and employees.
+//                      value is zero (0) then the file is private to the tenant owners and employees.
 //
-//                      0x01 - Public, available to general public via the business website.
+//                      0x01 - Public, available to general public via the tenant website.
 //                      0x02 - Customers, available only to customers who have logged into the site.
 //                      0x04 - Available to a specified list of customers **future**
 // 
@@ -35,7 +35,7 @@ function ciniki_filedepot_add($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'project_id'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Project'),
         'child_id'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Child'),
         'type'=>array('required'=>'no', 'blank'=>'no', 'default'=>'0', 'name'=>'Type'),
@@ -52,10 +52,10 @@ function ciniki_filedepot_add($ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
-    $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.add'); 
+    $rc = ciniki_filedepot_checkAccess($ciniki, $args['tnid'], 'ciniki.filedepot.add'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -73,7 +73,7 @@ function ciniki_filedepot_add($ciniki) {
     //
     if( isset($args['project_id']) && $args['project_id'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'projects', 'private', 'checkAccess');
-        $rc = ciniki_projects_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.add', $args['project_id']);
+        $rc = ciniki_projects_checkAccess($ciniki, $args['tnid'], 'ciniki.filedepot.add', $args['project_id']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -104,7 +104,7 @@ function ciniki_filedepot_add($ciniki) {
     // Check the permalink doesn't already exist
     //
     $strsql = "SELECT id, name, permalink FROM ciniki_filedepot_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
@@ -136,12 +136,12 @@ function ciniki_filedepot_add($ciniki) {
     //
     // Add the filedepot to the database
     //
-    $strsql = "INSERT INTO ciniki_filedepot_files (uuid, project_id, business_id, type, extension, status, name, version, permalink, "
+    $strsql = "INSERT INTO ciniki_filedepot_files (uuid, project_id, tnid, type, extension, status, name, version, permalink, "
         . "category, description, org_filename, sharing_flags, user_id, "
         . "date_added, last_updated) VALUES ("
         . "UUID(), "
         . "'" . ciniki_core_dbQuote($ciniki, $args['project_id']) . "', "
-        . "'" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "', "
+        . "'" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "', "
         . "'" . ciniki_core_dbQuote($ciniki, $args['type']) . "', "
         . "'" . ciniki_core_dbQuote($ciniki, $args['extension']) . "', "
         . "'1', "
@@ -182,7 +182,7 @@ function ciniki_filedepot_add($ciniki) {
     foreach($changelog_fields as $field) {
         $insert_name = $field;
         if( isset($ciniki['request']['args'][$field]) && $ciniki['request']['args'][$field] != '' ) {
-            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', $args['business_id'], 
+            $rc = ciniki_core_dbAddModuleHistory($ciniki, 'ciniki.filedepot', 'ciniki_filedepot_history', $args['tnid'], 
                 1, 'ciniki_filedepot_files', $file_id, $insert_name, $ciniki['request']['args'][$field]);
         }
     }
@@ -194,7 +194,7 @@ function ciniki_filedepot_add($ciniki) {
         $strsql = "UPDATE ciniki_filedepot_files "
             . "SET parent_id = '" . ciniki_core_dbQuote($ciniki, $file_id) . "' "
             . ", last_updated = UTC_TIMESTAMP() "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             // Move all children of the old parent
             . "AND (parent_id = '" . ciniki_core_dbQuote($ciniki, $args['child_id']) . "' "
                 // and the original parent should now become a child
@@ -212,11 +212,11 @@ function ciniki_filedepot_add($ciniki) {
     //
     // Get the uuid for the file
     //
-    $strsql = "SELECT ciniki_businesses.uuid AS business_uuid, ciniki_filedepot_files.uuid AS file_uuid "
-        . "FROM ciniki_filedepot_files, ciniki_businesses "
+    $strsql = "SELECT ciniki_tenants.uuid AS tenant_uuid, ciniki_filedepot_files.uuid AS file_uuid "
+        . "FROM ciniki_filedepot_files, ciniki_tenants "
         . "WHERE ciniki_filedepot_files.id = '" . ciniki_core_dbQuote($ciniki, $file_id) . "' "
-        . "AND ciniki_filedepot_files.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND ciniki_filedepot_files.business_id = ciniki_businesses.id "
+        . "AND ciniki_filedepot_files.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_filedepot_files.tnid = ciniki_tenants.id "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.filedepot', 'file');
     if( $rc['stat'] != 'ok' ) {
@@ -228,13 +228,13 @@ function ciniki_filedepot_add($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.7', 'msg'=>'Unable to add file'));
     }
     $file_uuid = $rc['file']['file_uuid'];
-    $business_uuid = $rc['file']['business_uuid'];
+    $tenant_uuid = $rc['file']['tenant_uuid'];
 
     //
     // Move the file into storage
     //
     $storage_dirname = $ciniki['config']['ciniki.core']['storage_dir'] . '/'
-        . $business_uuid[0] . '/' . $business_uuid 
+        . $tenant_uuid[0] . '/' . $tenant_uuid 
         . '/filedepot/'
         . $file_uuid[0];
     $storage_filename = $storage_dirname . '/' . $file_uuid;
@@ -258,11 +258,11 @@ function ciniki_filedepot_add($ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'filedepot');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'filedepot');
 
     //
     // Check if the web module settings should be updated to allow 
@@ -274,8 +274,8 @@ function ciniki_filedepot_add($ciniki) {
         //
         $updated = 0;
         if( isset($args['sharing_flags']) && ($args['sharing_flags']&0x01) == 0x01 ) {
-            $strsql = "INSERT INTO ciniki_web_settings (business_id, detail_key, detail_value, date_added, last_updated) "
-                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "'"
+            $strsql = "INSERT INTO ciniki_web_settings (tnid, detail_key, detail_value, date_added, last_updated) "
+                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "'"
                 . ", '" . ciniki_core_dbQuote($ciniki, 'page-downloads-public') . "', 'yes' "
                 . ", UTC_TIMESTAMP(), UTC_TIMESTAMP()) "
                 . "ON DUPLICATE KEY UPDATE detail_value = 'yes' "
@@ -293,8 +293,8 @@ function ciniki_filedepot_add($ciniki) {
         // This will enable the customer sign in button.
         //
         if( isset($args['sharing_flags']) && ($args['sharing_flags']&0x02) == 0x02 ) {
-            $strsql = "INSERT INTO ciniki_web_settings (business_id, detail_key, detail_value, date_added, last_updated) "
-                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "'"
+            $strsql = "INSERT INTO ciniki_web_settings (tnid, detail_key, detail_value, date_added, last_updated) "
+                . "VALUES ('" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "'"
                 . ", '" . ciniki_core_dbQuote($ciniki, 'page-downloads-customers') . "', 'yes' "
                 . ", UTC_TIMESTAMP(), UTC_TIMESTAMP()) "
                 . "ON DUPLICATE KEY UPDATE detail_value = 'yes' "
@@ -309,11 +309,11 @@ function ciniki_filedepot_add($ciniki) {
         }
 
         //
-        // Update the last_change date in the business modules
+        // Update the last_change date in the tenant modules
         // Ignore the result, as we don't want to stop user updates if this fails.
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-        ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'web');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+        ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'web');
 
     }
 

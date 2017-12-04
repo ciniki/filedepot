@@ -17,7 +17,7 @@ function ciniki_filedepot_stats($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -26,10 +26,10 @@ function ciniki_filedepot_stats($ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'filedepot', 'private', 'checkAccess');
-    $rc = ciniki_filedepot_checkAccess($ciniki, $args['business_id'], 'ciniki.filedepot.stats'); 
+    $rc = ciniki_filedepot_checkAccess($ciniki, $args['tnid'], 'ciniki.filedepot.stats'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -43,7 +43,7 @@ function ciniki_filedepot_stats($ciniki) {
     //
     $strsql = "SELECT IF(category='', 'Uncategorized', category) AS name, COUNT(*) AS count "
         . "FROM ciniki_filedepot_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND parent_id = 0 "
         . "GROUP BY category "
         . "ORDER BY name "

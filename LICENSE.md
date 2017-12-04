@@ -1,6 +1,6 @@
 The MIT License
 
-Ciniki - Small Business Management Platform (http://ciniki.org)
+Ciniki - Multitenant Cloud Platform (http://ciniki.org)
 Copyright (c) 2011, ciniki.org
 
 Permission is hereby granted, free of charge, to any person obtaining a
