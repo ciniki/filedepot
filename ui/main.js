@@ -332,7 +332,7 @@ function ciniki_filedepot_main() {
         //
         var appContainer = M.createContainer(appPrefix, 'ciniki_filedepot_main', 'yes');
         if( appContainer == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
 
@@ -424,13 +424,13 @@ function ciniki_filedepot_main() {
     this.addFile = function() {
         var f = this.add.formFieldValue(this.add.sections._file.fields.uploadfile, 'uploadfile');
         if( f == null || f == '' ) {
-            alert("You must specify a file");
+            M.alert("You must specify a file");
             return false;
         }
         var n = this.add.formFieldValue(this.add.sections.info.fields.name, 'name');
         var v = this.add.formFieldValue(this.add.sections.info.fields.version, 'version');
         if( n == this.add.data.name && v == this.add.data.version ) {
-            alert("You must specify a new version or name");
+            M.alert("You must specify a new version or name");
             return false;
         }
 
@@ -540,7 +540,7 @@ function ciniki_filedepot_main() {
     };
 
     this.deleteFile = function(fid) {
-        if( confirm('Are you sure you want to delete \'' + this.file.data.name + '\'?  All information about it will be removed and unrecoverable.') ) {
+        M.confirm('Are you sure you want to delete \'' + this.file.data.name + '\'?  All information about it will be removed and unrecoverable.',null,function() {
             var rsp = M.api.getJSONCb('ciniki.filedepot.delete', 
                 {'tnid':M.curTenantID, 'file_id':fid}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
@@ -560,7 +560,7 @@ function ciniki_filedepot_main() {
                         M.ciniki_filedepot_main.edit.destroy();
                     }
                 });
-        }
+        });
     };
 
     this.downloadFile = function(fid) {
