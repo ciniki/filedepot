@@ -32,6 +32,8 @@ function ciniki_filedepot_wng_sections(&$ciniki, $tnid, $args) {
         . "FROM ciniki_filedepot_files "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND parent_id = 0 "
+        . "AND status = 1 " // Active
+        . "AND (sharing_flags&0x01) = 0x01 " // Public
         . "ORDER BY category "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -50,8 +52,50 @@ function ciniki_filedepot_wng_sections(&$ciniki, $tnid, $args) {
         'name'=>'Files',
         'module' => 'File Depot',
         'settings'=>array(
+            'class' => array('label'=>'Style', 'type'=>'toggle', 'toggles'=>array(
+                'link' => 'Links',
+                'button' => 'Buttons',
+                )),
             'category' => array('label'=>'Category', 'type'=>'select', 'options'=>$categories, 
                 'complex_options'=>array('value'=>'category', 'name'=>'category'),
+                ),
+            ),
+        );
+
+    //
+    // Get the list of files
+    //
+    $strsql = "SELECT id, name "
+        . "FROM ciniki_filedepot_files "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND parent_id = 0 "
+        . "AND status = 1 " // Active
+        . "AND (sharing_flags&0x01) = 0x01 " // Public
+        . "ORDER BY name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.filedepot', array(
+        array('container'=>'files', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.26', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+    }
+    $files = isset($rc['files']) ? $rc['files'] : array(); 
+
+    //
+    // Image, Menu with no drop downs/submenus
+    //
+    $sections['ciniki.filedepot.filedownload'] = array(
+        'name'=>'File Download',
+        'module' => 'File Depot',
+        'settings'=>array(
+            'link-text' => array('label'=>'Link Text', 'type'=>'text'),
+            'class' => array('label'=>'Style', 'type'=>'toggle', 'toggles'=>array(
+                'link' => 'Link',
+                'button' => 'Button',
+                )),
+            'file-id' => array('label'=>'File', 'type'=>'select', 'options'=>$files, 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 ),
             ),
         );
