@@ -44,7 +44,7 @@ function ciniki_filedepot_update($ciniki) {
 
     if( isset($args['name']) ) {
         $name = $args['name'];
-        if( $args['version'] != '' ) {
+        if( isset($args['version']) && $args['version'] != '' ) {
             $name .= "-" . $args['version'];
         }
         $args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($name)));

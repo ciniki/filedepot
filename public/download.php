@@ -85,7 +85,6 @@ function ciniki_filedepot_download($ciniki) {
     header('Content-Length: ' . filesize($storage_filename));
     header('Cache-Control: max-age=0');
 
-    error_log('Downloading: ' . $storage_filename);
     $fp = fopen($storage_filename, 'rb');
     fpassthru($fp);
 
