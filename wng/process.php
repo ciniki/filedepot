@@ -113,7 +113,11 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
         } elseif( isset($rc['files']) && count($rc['files']) > 0 ) {
             $files = $rc['files'];
             foreach($files as $fid => $file) {
-                $files[$fid]['url'] = $request['page']['path'] . '/download/' . $file['permalink'];
+                if( $request['page']['path'] == '/' ) {
+                    $files[$fid]['url'] = $request['page']['path'] . 'download/' . $file['permalink'];
+                } else {
+                    $files[$fid]['url'] = $request['page']['path'] . '/download/' . $file['permalink'];
+                }
                 if( isset($s['link-text']) && $s['link-text'] != '' ) {
                     $files[$fid]['name'] = $s['link-text'];
                 }
