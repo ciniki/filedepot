@@ -205,6 +205,7 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
             }
             $blocks[] = array(
                 'type' => 'filelist',
+                'title' => isset($s['class']) ? $s['title'] : '',
                 'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['label']),
                 'link-class' => isset($s['class']) ? $s['class'] : 'link',
                 'items' => $files,

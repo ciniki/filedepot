@@ -56,6 +56,7 @@ function ciniki_filedepot_wng_sections(&$ciniki, $tnid, $args) {
                 'link' => 'Links',
                 'button' => 'Buttons',
                 )),
+            'title' => array('label'=>'Title', 'type'=>'text'),
             'category' => array('label'=>'Category', 'type'=>'select', 'options'=>$categories, 
                 'complex_options'=>array('value'=>'category', 'name'=>'category'),
                 ),
