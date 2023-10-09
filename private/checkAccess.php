@@ -32,12 +32,10 @@ function ciniki_filedepot_checkAccess($ciniki, $tnid, $method) {
     }
 
     //
-    // Sysadmins are allowed full access, except for deleting.
+    // Sysadmins are allowed full access
     //
-    if( $method != 'ciniki.filedepot.delete' ) {
-        if( ($ciniki['session']['user']['perms'] & 0x01) == 0x01 ) {
-            return array('stat'=>'ok', 'modules'=>$modules);
-        }
+    if( ($ciniki['session']['user']['perms'] & 0x01) == 0x01 ) {
+        return array('stat'=>'ok', 'modules'=>$modules);
     }
 
     //
