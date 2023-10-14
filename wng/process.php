@@ -23,14 +23,14 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.filedepot']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.wng.22', 'msg'=>"Content not available."));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.27', 'msg'=>"Content not available."));
     }
 
     //
     // Check to make sure the report is specified
     //
     if( !isset($section['ref']) || !isset($section['settings']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.wng.23', 'msg'=>"No category specified."));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.28', 'msg'=>"No category specified."));
     }
 
     //
@@ -164,7 +164,7 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
                 'fields'=>array('id', 'uuid', 'name', 'permalink', 'description')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.24', 'msg'=>'Unable to get file list', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.29', 'msg'=>'Unable to get file list', 'err'=>$rc['err']));
         }
         if( isset($rc['files']) && count($rc['files']) > 0 
             && isset($request['cur_uri_pos']) 
@@ -178,7 +178,7 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
                     $storage_dirname = $tenant_storage_dir . '/filedepot/' . $file['uuid'][0];
                     $storage_filename = $storage_dirname . '/' . $file['uuid'];
                     if( !is_file($storage_filename) ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.25', 'msg'=>'Unable to find file'));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.30', 'msg'=>'Unable to find file'));
                     }
 
                     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
