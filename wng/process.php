@@ -23,7 +23,12 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.filedepot']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.filedepot.27', 'msg'=>"Content not available."));
+        $blocks[] = array(
+            'type' => 'msg', 
+            'level' => 'error', 
+            'content' => 'File not found',
+            );
+        return array('stat'=>'ok', 'blocks'=>$blocks);
     }
 
     //
@@ -110,6 +115,11 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
                     return array('stat'=>'exit');
                 }
             }
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error', 
+                'content' => 'File not found',
+                );
         } elseif( isset($rc['files']) && count($rc['files']) > 0 ) {
             $files = $rc['files'];
             foreach($files as $fid => $file) {
@@ -127,6 +137,12 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
                 'link-class' => isset($s['class']) ? $s['class'] : 'link',
                 'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['label']),
                 'items' => $files,
+                );
+        } else {
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error', 
+                'content' => 'File not found',
                 );
         }
     }
@@ -198,6 +214,14 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
                     return array('stat'=>'exit');
                 }
             }
+            //
+            // Nothing found, return error
+            //
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error', 
+                'content' => 'File not found',
+                );
         } elseif( isset($rc['files']) && count($rc['files']) > 0 ) {
             $files = $rc['files'];
             foreach($files as $fid => $file) {
@@ -209,6 +233,12 @@ function ciniki_filedepot_wng_process(&$ciniki, $tnid, &$request, $section) {
                 'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['label']),
                 'link-class' => isset($s['class']) ? $s['class'] : 'link',
                 'items' => $files,
+                );
+        } else {
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error', 
+                'content' => 'File not found',
                 );
         }
     }
